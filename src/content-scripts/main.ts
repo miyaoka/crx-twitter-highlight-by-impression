@@ -52,11 +52,10 @@ const update = () => {
     const impressionCount = getCount(impressionEl);
     const likeCount = getCount(likeEl);
 
-    if (impressionCount > 0) {
-      displayLikeRatio(line, likeCount / impressionCount);
-    }
-
     if (impressionCount < 1000) return;
+
+    // like / impression の比率表示を追加
+    displayLikeRatio(line, likeCount / impressionCount);
 
     const tweetTextEl = line.querySelector<HTMLElement>(tweetTextSelector);
     if (!tweetTextEl) return;
