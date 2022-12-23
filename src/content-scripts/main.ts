@@ -7,12 +7,16 @@ const unlikeSelector = "[data-testid=unlike]";
 const likeRatioId = "likeRatio";
 
 const displayLikeRatio = (line: HTMLElement, ratio: number) => {
+  // like 1%以上は良ツイートとしてハイライト
+  const color = ratio > 0.01 ? "#ff0" : "#fff";
   const likePercentage = `${(ratio * 100).toFixed(1)}%`;
+
   const likeRatioEl = line.querySelector<HTMLElement>(
     `[data-testid=${likeRatioId}]`
   );
   if (likeRatioEl) {
     likeRatioEl.innerText = likePercentage;
+    likeRatioEl.style.color = color;
     return;
   }
 
@@ -22,9 +26,10 @@ const displayLikeRatio = (line: HTMLElement, ratio: number) => {
   newEl.style.position = "absolute";
   newEl.style.right = "0";
   newEl.style.opacity = "0.5";
-  newEl.style.color = "#fff";
   newEl.style.fontSize = "large";
   newEl.style.fontWeight = "bold";
+  newEl.style.color = color;
+
   line.appendChild(newEl);
 };
 
