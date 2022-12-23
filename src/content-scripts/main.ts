@@ -1,6 +1,7 @@
 const timelineSelector = "[data-testid=tweet]";
 const tweetTextSelector = "[data-testid=tweetText]";
 const impressionSelector = "[role=group] a";
+const likeSelector = "[data-testid$=like]"; // like or unlike
 
 const numberUnitMap = {
   ja: {
@@ -13,36 +14,69 @@ const numberUnitMap = {
   },
 } as const;
 
+const likeRatioId = "likeRatio";
+
+const displayLikeRatio = (line: HTMLElement, ratio: number) => {
+  const likePercentage = `${(ratio * 100).toFixed(1)}%`;
+  const likeRatioEl = line.querySelector<HTMLElement>(
+    `[data-testid=${likeRatioId}]`
+  );
+  if (likeRatioEl) {
+    likeRatioEl.innerText = likePercentage;
+    return;
+  }
+
+  const newEl = document.createElement("div");
+  newEl.dataset.testid = likeRatioId;
+  newEl.innerText = likePercentage;
+  newEl.style.position = "absolute";
+  newEl.style.right = "0";
+  newEl.style.opacity = "0.5";
+  newEl.style.color = "#fff";
+  newEl.style.fontSize = "large";
+  newEl.style.fontWeight = "bold";
+  line.appendChild(newEl);
+};
+
 const update = () => {
   const timeline = Array.from(
     document.querySelectorAll<HTMLElement>(timelineSelector)
   );
 
-  const lang = document.querySelector<HTMLHtmlElement>("html")?.lang;
+  const langText = document.querySelector<HTMLHtmlElement>("html")?.lang;
+  const lang = langText === "ja" ? "ja" : "en";
 
   timeline.forEach((line) => {
     const impressionEl = line.querySelector<HTMLElement>(impressionSelector);
     if (!impressionEl) return;
-    const impressionText = impressionEl.innerText;
+    const likeEl = line.querySelector<HTMLElement>(likeSelector);
+    if (!likeEl) return;
 
-    const count = getCount(impressionText, lang === "ja" ? "ja" : "en");
-    if (count < 1000) return;
+    const impressionCount = getCount(impressionEl.innerText, lang);
+    const likeCount = getCount(likeEl.innerText, lang);
+
+    if (impressionCount > 0) {
+      displayLikeRatio(line, likeCount / impressionCount);
+    }
+
+    if (impressionCount < 1000) return;
+
     const tweetTextEl = line.querySelector<HTMLElement>(tweetTextSelector);
     if (!tweetTextEl) return;
 
-    if (count < 10000) {
+    if (impressionCount < 10000) {
       tweetTextEl.style.fontWeight = "500";
       tweetTextEl.style.color = "#ffffcc";
       // tweetText.style.fontSize = "large";
       return;
     }
-    if (count < 100000) {
+    if (impressionCount < 100000) {
       tweetTextEl.style.fontWeight = "600";
       tweetTextEl.style.color = "#ffff66";
       // tweetText.style.fontSize = "x-large";
       return;
     }
-    if (count < 1000000) {
+    if (impressionCount < 1000000) {
       tweetTextEl.style.fontWeight = "700";
       tweetTextEl.style.color = "#ffff00";
       // tweetText.style.fontSize = "x-large";
