@@ -1,7 +1,8 @@
 const timelineSelector = "[data-testid=tweet]";
 const tweetTextSelector = "[data-testid=tweetText]";
 const impressionSelector = "[role=group] a";
-const likeSelector = "[data-testid$=like]"; // like or unlike
+const likeSelector = "[data-testid=like]";
+const unlikeSelector = "[data-testid=unlike]";
 
 const numberUnitMap = {
   ja: {
@@ -49,7 +50,9 @@ const update = () => {
   timeline.forEach((line) => {
     const impressionEl = line.querySelector<HTMLElement>(impressionSelector);
     if (!impressionEl) return;
-    const likeEl = line.querySelector<HTMLElement>(likeSelector);
+    const likeEl =
+      line.querySelector<HTMLElement>(likeSelector) ??
+      line.querySelector<HTMLElement>(unlikeSelector);
     if (!likeEl) return;
 
     const impressionCount = getCount(impressionEl.innerText, lang);
