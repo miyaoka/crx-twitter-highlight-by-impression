@@ -4,17 +4,6 @@ const impressionSelector = "[role=group] a";
 const likeSelector = "[data-testid=like]";
 const unlikeSelector = "[data-testid=unlike]";
 
-const numberUnitMap = {
-  ja: {
-    text: "万億兆",
-    base: 10000,
-  },
-  en: {
-    text: "KMB",
-    base: 1000,
-  },
-} as const;
-
 const likeRatioId = "likeRatio";
 
 const displayLikeRatio = (line: HTMLElement, ratio: number) => {
@@ -44,9 +33,6 @@ const update = () => {
     document.querySelectorAll<HTMLElement>(timelineSelector)
   );
 
-  const langText = document.querySelector<HTMLHtmlElement>("html")?.lang;
-  const lang = langText === "ja" ? "ja" : "en";
-
   timeline.forEach((line) => {
     const impressionEl = line.querySelector<HTMLElement>(impressionSelector);
     if (!impressionEl) return;
@@ -55,8 +41,8 @@ const update = () => {
       line.querySelector<HTMLElement>(unlikeSelector);
     if (!likeEl) return;
 
-    const impressionCount = getCount(impressionEl.innerText, lang);
-    const likeCount = getCount(likeEl.innerText, lang);
+    const impressionCount = getCount(impressionEl);
+    const likeCount = getCount(likeEl);
 
     if (impressionCount > 0) {
       displayLikeRatio(line, likeCount / impressionCount);
@@ -91,21 +77,17 @@ const update = () => {
   });
 };
 
-const getCount = (text: string, lang: "ja" | "en"): number => {
-  const numberUnit = numberUnitMap[lang];
+const getCount = (el: HTMLElement): number => {
+  const label = el.ariaLabel;
 
-  const unitRegExp = new RegExp(
-    `^(?<num>.*\\d)(?<unit>[${numberUnit.text}])?$`
-  );
-
-  const groups = text.match(unitRegExp)?.groups;
-  if (!groups) return 0;
-
-  const num = Number(String(groups.num).replace(/,/, ""));
-  if (!groups.unit) return num;
-
-  const unitNum = numberUnit.base ** (numberUnit.text.indexOf(groups.unit) + 1);
-  return num * unitNum;
+  // label先頭部分から数値を取得する（言語に依らず数値が先頭に表記されている前提）
+  // e.g.)
+  // aria-label="107056 件の表示。ツイートアナリティクスを表示"
+  // aria-label="14427528 Views. View Tweet analytics"
+  if (!label) return 0;
+  const matched = label.match(/^\d+/);
+  if (!matched) return 0;
+  return Number(matched[0]);
 };
 
 new PerformanceObserver(() => {
