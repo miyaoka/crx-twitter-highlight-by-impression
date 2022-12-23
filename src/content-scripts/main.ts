@@ -36,6 +36,9 @@ const update = () => {
   timeline.forEach((line) => {
     const impressionEl = line.querySelector<HTMLElement>(impressionSelector);
     if (!impressionEl) return;
+
+    impressionEl.style.opacity = "0.2";
+
     const likeEl =
       line.querySelector<HTMLElement>(likeSelector) ??
       line.querySelector<HTMLElement>(unlikeSelector);
