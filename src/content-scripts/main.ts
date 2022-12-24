@@ -1,6 +1,6 @@
 const timelineSelector = "[data-testid=tweet]";
 const tweetTextSelector = "[data-testid=tweetText]";
-const impressionSelector = "[role=group] a";
+const impressionSelector = "[role=group] a[href$=analytics]";
 const likeSelector = "[data-testid=like]";
 const unlikeSelector = "[data-testid=unlike]";
 
@@ -42,7 +42,14 @@ const update = () => {
     const impressionEl = line.querySelector<HTMLElement>(impressionSelector);
     if (!impressionEl) return;
 
-    impressionEl.style.opacity = "0.2";
+    // impressionの位置を左に追い出して目立たなくする
+    const impressionParentEl = impressionEl.parentElement;
+    if (impressionParentEl) {
+      impressionParentEl.style.position = "absolute";
+      impressionParentEl.style.transform = "translateX(-100%)";
+      impressionParentEl.style.opacity = "0.2";
+      impressionParentEl.style.wordBreak = "keep-all";
+    }
 
     const likeEl =
       line.querySelector<HTMLElement>(likeSelector) ??
