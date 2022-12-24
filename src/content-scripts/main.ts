@@ -34,9 +34,7 @@ const displayLikeRatio = (line: HTMLElement, ratio: number) => {
 };
 
 const update = () => {
-  const timeline = Array.from(
-    document.querySelectorAll<HTMLElement>(timelineSelector)
-  );
+  const timeline = document.querySelectorAll<HTMLElement>(timelineSelector);
 
   timeline.forEach((line) => {
     const impressionEl = line.querySelector<HTMLElement>(impressionSelector);
