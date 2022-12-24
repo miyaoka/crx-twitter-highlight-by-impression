@@ -47,6 +47,7 @@ const update = () => {
       impressionParentEl.style.transform = "translateX(-100%)";
       impressionParentEl.style.opacity = "0.2";
       impressionParentEl.style.wordBreak = "keep-all";
+      impressionParentEl.style.pointerEvents = "none";
     }
 
     const likeEl =
